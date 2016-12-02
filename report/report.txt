@@ -1,0 +1,57 @@
+# this file will be converted to a word document when
+# we have finished working on the report.
+
+# feel free to add to any of the following pages of the report.
+
+
+Title page:
+
+
+
+
+Table of contents:
+
+
+
+
+Introduction:
+
+
+
+
+Microcontroller platform details:
+
+
+
+
+Test device details:
+
+
+
+
+Development tools:
+
+
+
+
+The experiment:
+
+
+
+
+Conclusions:
+
+
+
+
+Contributions:
+
+
+
+
+Project code listing:
+
+
+
+
+
