@@ -1,34 +1,52 @@
-; timer.S - routines for Led Fading
+; timer.S - Timer1 code for interrupt blink-buzz
 
 #include "config.inc"
 
-.equ    PRESET      ,100
+        .global Timer1Setup
+        .global TIMER1_COMPA_vect
+        .global trigger
+
+.equ    COUNT,      250                 ; counts per trigger
+
+        .section    .data
+
+trigger:
+        .byte   0
 
         .section    .text
 
-        .global     timer_delay
-        .global     timer_init
-
-timer_init:
-        ldi     r16, (1 << CS02) | (0 << CS01) | (1 << CS00)  ; divide by 64
-        out     _TCCR0B, r16                    ; set timer clock 
-        ldi     r16, 1 << TOV0                  ; clear interrupt flag
-        out     _TIFR0, r16
-        ldi     r16, PRESET                     ; initial value for timer
-        out     _TCNT0, r16
+;----------------------------------------------------------------------
+; Initialize Timer 1 for interrupts
+;
+Timer1Setup:
+        lds     r16, TCCR1B
+        ori     r16, (1<<WGM12)|(1<<CS11)           ; divide by 8
+        sts     TCCR1B, r16                         ; set timer clock 
+        ldi     r16, (COUNT & 0xff)                 ; set in compare count
+        sts     OCR1AL, r16                         
+        ldi     r16, (COUNT >> 8)
+        sts     OCR1AH, r16
+        lds     r16, TIMSK1                         ; get interrupt mask reg
+        ori     r16, (1<<OCIE1A)                    ; enable interrupt 
+        sts     TIMSK1, r16                         ; write it back
+        sei                                         ; let the fun begin
         ret
-
-
-
-timer_delay:
-        in      r16, _TIFR0                     ; check the flag 
-        sbrs    r16, 0 << TOV0                  ; skip if overflow set
-        rjmp    timer_delay                     ; wait for it
-        ldi     r16, 1 << TOV0                  ; clear the interrupt flag
-        out     _TIFR0, r16                     ; clear the interrupt flag
-        ldi     r16, PRESET                     ; reload the counter
-        out     _TCNT0, r16                     ; set preset in
-        ret
-
-
-
+		
+;----------------------------------------------------------------------
+; Timer0 overflow ISR
+;
+TIMER1_COMPA_vect:
+        ; save callers registers
+        push    r16
+        push    r0
+        in      r0, _SREG            ; get flags
+        push    r0
+        ;
+        ldi     r16, 1
+        sts     trigger, r16
+        ;
+        pop     r0
+        out     _SREG, r0            ; recover flags
+        pop     r0
+        pop     r16
+        reti

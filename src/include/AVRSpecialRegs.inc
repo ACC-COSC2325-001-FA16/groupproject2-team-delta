@@ -57,9 +57,42 @@
 ; TIFR1: 0x16 (0x26)
 #define _TIRF1    _SFR_IO_ADDR(TIFR1)
 
+;Added more---------------------
+; TCCR0A: 0x24 (0x44)
+#define _TCCR1A    _SFR_IO_ADDR(TCCR1A)
+
+; TCCR1B: 0x25 (0x45)
+#define _TCCR1B    _SFR_IO_ADDR(TCCR1B)
+
+; TCNT1: 0x26 (0x46)
+#define _TCNT1    _SFR_IO_ADDR(TCNT1)
+
+; OCR0A: 0x27 (ox47)
+#define _OCR1A    _SFR_IO_ADDR(OCR1A)
+
+; OCR0B: 0x28 (0x48)
+#define _OCR1B    _SFR_IO_ADDR(OCR1B)
+
+
 ; Timer 2 ---------------------------------------
 ; TIFR2: 0x17 (0x37)
 #define _TIFR2    _SFR_IO_ADDR(TIFR2)
+
+;Added more------------------------
+; TCCR0A: 0x24 (0x44)
+#define _TCCR2A    _SFR_IO_ADDR(TCCR2A)
+
+; TCCR0B: 0x25 (0x45)
+#define _TCCR2B    _SFR_IO_ADDR(TCCR2B)
+
+; TCNT0: 0x26 (0x46)
+#define _TCNT2    _SFR_IO_ADDR(TCNT2)
+
+; OCR0A: 0x27 (ox47)
+#define _OCR2A    _SFR_IO_ADDR(OCR2A)
+
+; OCR0B: 0x28 (0x48)
+#define _OCR2B    _SFR_IO_ADDR(OCR2B)
 
 ; chip initialization ---------------------------
 ; SPL: 0x3D (0x5D)
@@ -70,3 +103,13 @@
 
 ; SREG 0x3F (0x5F)
 #define _SREG    _SFR_IO_ADDR(SREG)
+
+; ADC  ----------------------------
+; ADCSRA: 0x7A	()
+#define _ADCSRA	 _SFR_IO_ADDR(ADCSRA)
+
+;ADMUX: 0x7C	()
+#define _ADMUX	_SFR_IO_ADDR(ADMUX)
+
+;ADCH: 0x79
+#define _ADCH	_SFR_IO_ADDR(ADCH)
