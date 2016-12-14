@@ -33,7 +33,8 @@ loop:
         
 bright_up:        
         in      r18, _OCR0B     ; copy timer compare register
-       
+        cpi     r18, 255        ; prevent overflow wrap-around
+        breq    loop
         inc     r18             ; increase by one
         out     _OCR0B, r18     ; write cmp reg back 
         call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
@@ -41,6 +42,8 @@ bright_up:
         
 bright_down:        
         in      r18, _OCR0B     ; copy timer compare register
+        cpi     r18, 0          ; prevent overflow wrap-around
+        breq    loop
         dec     r18             
         out     _OCR0B, r18     ; write cmp reg back 
         call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
