@@ -60,26 +60,7 @@ init:   eor         r1, r1                  ; zero out the r1 register
         sbi         LED_DIR, LED_PIN        ; set LED pin to output
         sbi         LED_PORT, LED_PIN       ; start with the LED on
 		
-		 ; set up the LED port
-        ;sbi         LED_DIR1, LED_PIN1        ; set LED pin to output
-        ;cbi         LED_PORT1, LED_PIN1       ; start with the LED off
 		
-		;set up ADC
-	
-		;ldi		r19, (1 << ADPS2)
-		;out		_ADCSRA, r19
-		;sbi		_ADCSRA, ADATE
-		;ldi 	r19, ((1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADATE) | (1 << ADEN) | (1 << ADSC))
-		
-		;out	_ADCSRA , r19
-		;ldi	r19, ((1 << REFS0) | (1 << ADLAR))
-		;out 	_ADMUX, r19
-		;ldi		r19, (1 << ADFR)
-		;or		_ADCSRA, r19
-		;ldi		r19, (1 << ADEN)
-		;or		ADCSRA, r19
-		;ldi		r19, (1 << ADSC)
-		;or		ADCSRA, r19
 		
 		; set up PWM with timer0
 		ldi		r18, ((1 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00))
