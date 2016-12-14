@@ -1,10 +1,20 @@
-# Makefile for example Arduino projects
+# Makefile for aBlink
 
-build:
-	cd aLed && make
+TARGET	= aBrightness
 
-clean:
-	cd aLed && make clean
+ASRCS 	= $(wildcard *.S)
+INTTBL	= FALSE
 
-install:
-	sudo cp include/AVR* /usr/local/include
+# board definition
+MCU	= atmega328p
+F_CPU	= 16000000
+
+# uncomment one of these linesand check for your system:
+#PORT	= COM6
+PORT	= /dev/ttyACM0
+#PORT	= /dev/cu.usbmodem1411
+
+# uncomment one of thes elines
+MAKE_BASE = ./
+#MAKE_BASE = /usr/local/
+include $(MAKE_BASE)include/AVRMakefile.mak

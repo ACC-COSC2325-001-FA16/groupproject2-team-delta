@@ -34,7 +34,7 @@ Timer1Setup:
 		
 ;----------------------------------------------------------------------
 ; Timer0 overflow ISR
-;
+; Interupt when timer rolls over
 TIMER1_COMPA_vect:
         ; save callers registers
         push    r16

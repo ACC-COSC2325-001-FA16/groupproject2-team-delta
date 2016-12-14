@@ -12,5 +12,5 @@ else
 		include $(MAKE_BASE)include/AVRMakeMac.mak
 	endif
 endif
-include $(MAKE_BASE)include/AVRBuildRules.mak
+include $(MAKE_BASE)include\AVRBuildRules.mak
 
