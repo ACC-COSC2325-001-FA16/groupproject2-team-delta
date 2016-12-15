@@ -22,17 +22,32 @@ main:
         ; initilaize the chip for blinking
         call        init   		
 
-; Polling Loop
-loop:   
+
+loop:    
 		sbic    _PINB, 0        ; skips rjmp if button isn't being pressed
-		rjmp    bright_up       ; If button is pressed, skip to increasing the brightness
+		rjmp    bright_up_r       ; If button is pressed, skip to increasing the brightness
         
         sbic    _PINB, 1        ; skips rjmp if button isn't being pressed
-        rjmp    bright_down     ; If button is pressed, skip to decreasing the brightness
+        rjmp    bright_down_r     ; If button is pressed, skip to decreasing the brightness
+		
+		
+		sbic    _PINB, 2        ; skips rjmp if button isn't being pressed
+		rjmp    bright_up_g       ; If button is pressed, skip to increasing the brightness
+        
+        sbic    _PINB, 3        ; skips rjmp if button isn't being pressed
+        rjmp    bright_down_g    ; If button is pressed, skip to decreasing the brightness
+		
+        
+		sbic    _PINB, 4        ; skips rjmp if button isn't being pressed
+		rjmp    bright_up_b       ; If button is pressed, skip to increasing the brightness
+        
+        sbic    _PINB, 5        ; skips rjmp if button isn't being pressed
+        rjmp    bright_down_b    ; If button is pressed, skip to decreasing the brightness
+		
         rjmp    loop
         
-bright_up:        
-        in      r18, _OCR0B     ; copy timer compare register
+bright_up_r:        
+        in     r18, _OCR0B     ; copy timer compare register
         cpi     r18, 255        ; prevent overflow wrap-around
         breq    loop
         inc     r18             ; increase by one
@@ -40,14 +55,52 @@ bright_up:
         call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
 		rjmp	loop
         
-bright_down:        
-        in      r18, _OCR0B     ; copy timer compare register
+bright_down_r:        
+        in      r18, _OCR0B    ; copy timer compare register
         cpi     r18, 0          ; prevent overflow wrap-around
         breq    loop
         dec     r18             
         out     _OCR0B, r18     ; write cmp reg back 
         call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
 		rjmp	loop
+		
+bright_up_g:        
+        in     r18, _OCR0A     ; copy timer compare register
+        cpi     r18, 255        ; prevent overflow wrap-around
+        breq    loop
+        inc     r18             ; increase by one
+        out     _OCR0A, r18     ; write cmp reg back 
+        call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
+		rjmp	loop
+        
+bright_down_g:        
+        in      r18, _OCR0A    ; copy timer compare register
+        cpi     r18, 0          ; prevent overflow wrap-around
+        breq    loop
+        dec     r18             
+        out     _OCR0A, r18     ; write cmp reg back 
+        call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
+		rjmp	loop
+
+bright_up_b:        
+        lds     r18, 0xB4     ; copy timer compare register
+        cpi     r18, 255        ; prevent overflow wrap-around
+        breq    loop
+        inc     r18             ; increase by one
+        sts     0xB4, r18     ; write cmp reg back 
+        call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
+		rjmp	loop
+        
+bright_down_b:        
+        lds      r18, 0xB4    ; copy timer compare register
+        cpi     r18, 0          ; prevent overflow wrap-around
+        breq    loop
+        dec     r18             
+        sts     0xB4, r18     ; write cmp reg back 
+        call    delay           ; delay some, otherwise otherwise PWM increases by too much per press
+		rjmp	loop
+
+
 		
 		
 init:   eor         r1, r1                  ; zero out the r1 register
@@ -56,28 +109,45 @@ init:   eor         r1, r1                  ; zero out the r1 register
         sts         CLKPR, r24              ; allow access to clock setup
         sts         CLKPR, r1               ; run at full speed       
        
-	    ; set up the LED port
-        sbi         LED_DIR, LED_PIN        ; set LED pin to output
-        sbi         LED_PORT, LED_PIN       ; start with the LED on
+	    ; set up the RED LED port
+        sbi         LED_DIR, LED_R        ; set LED pin to output
+        sbi         LED_PORT, LED_R       ; start with the LED on
+		
+		; set up the GREEN LED port
+        sbi         LED_DIR, LED_G      ; set LED pin to output
+        sbi         LED_PORT, LED_G       ; start with the LED on
+		
+		; set up the BLUE LED port
+        sbi         LED_DIR, LED_B        ; set LED pin to output
+        sbi         LED_PORT, LED_B       ; start with the LED on
 		
 		
 		
-		; set up PWM with timer0
-		ldi		r18, ((1 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00))
-		out		_TCCR0A, r18
-		ldi		r18, ((1 << WGM02) |(1<< CS00))
-		out		_TCCR0B, r18
-		ldi		r18, 255
-		out		_OCR0A, r18
-		ldi		r18, 10
-		out		_OCR0B, r18
+		; set up Fast PWM with timer0
+		ldi			r18, ((1 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00))		; Clear OC0A/OC0B on Compare Match, and
+		out			_TCCR0A, r18															; set OC0A/OC0B on BOTTOM
+		;ldi		r18, ((1 << WGM02) |(1<< CS00))
+		ldi			r18, (1<< CS00)								;no prescaling (16 Mhz)
+		out			_TCCR0B, r18
+		ldi			r18, 255			; change the brightness of GREEN LED									
+		out			_OCR0A, r18
+		ldi			r18, 255			; change the brightness of RED LED
+		out			_OCR0B, r18
 	
+		eor		r18, r18
+		; set up Fast PWM with timer2
+		ldi			r18, ((1 << COM2A1) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20))		; Clear OC2A/OC2B on Compare Match, and
+		;out			_TCCR2A, r18								; set OC2A/OC2B on BOTTOM
+		sts			0xB0, r18										; set OC2A/OC2B on BOTTOM
+		ldi			r18, (1<< CS20)									;no prescaling (16 Mhz)
+		;out			_TCCR2B, r18
+		sts			0xB1, r18
+		;ldi			r18, 255									
+		;out			_OCR2A, r18
+		;sts			0xB3, r18
+		ldi			r18, 255			; pin PD3 for Compare Match B Timer2 BIRGHTNESS BLUE
+		;out			_OCR2B, r18			
+		sts			0xB4, r18
 		
         ret
 
-toggle:
-        in          r24, LED_PORT1           ; get current bits
-        ldi         r25, (1 << LED_PIN1)     ; LED is pin 5
-        eor         r24, r25                ; flip the bit
-        out         LED_PORT1, r24           ; write the bits back
-        ret
