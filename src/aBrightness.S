@@ -6,11 +6,11 @@
 #include "config.inc"
 ;#define __SFR_OFFSET        0
 
-		.extern Timer1Setup
+	.extern Timer1Setup
         .section .text
         .global     main
         .extern     delay   
-		.extern     timer_init		
+	.extern     timer_init		
         .org        0x0000
 main:
         ; set up the stack
@@ -24,22 +24,22 @@ main:
 
 
 loop:    
-		sbic    _PINB, 0        ; skips rjmp if button isn't being pressed
-		rjmp    bright_up_r       ; If button is pressed, skip to increasing the brightness
+	sbic    _PINB, 0        ; skips rjmp if button isn't being pressed
+	rjmp    bright_up_r       ; If button is pressed, skip to increasing the brightness
         
         sbic    _PINB, 1        ; skips rjmp if button isn't being pressed
         rjmp    bright_down_r     ; If button is pressed, skip to decreasing the brightness
 		
 		
-		sbic    _PINB, 2        ; skips rjmp if button isn't being pressed
-		rjmp    bright_up_g       ; If button is pressed, skip to increasing the brightness
+	sbic    _PINB, 2        ; skips rjmp if button isn't being pressed
+	rjmp    bright_up_g       ; If button is pressed, skip to increasing the brightness
         
         sbic    _PINB, 3        ; skips rjmp if button isn't being pressed
         rjmp    bright_down_g    ; If button is pressed, skip to decreasing the brightness
 		
         
-		sbic    _PINB, 4        ; skips rjmp if button isn't being pressed
-		rjmp    bright_up_b       ; If button is pressed, skip to increasing the brightness
+	sbic    _PINB, 4        ; skips rjmp if button isn't being pressed
+	rjmp    bright_up_b       ; If button is pressed, skip to increasing the brightness
         
         sbic    _PINB, 5        ; skips rjmp if button isn't being pressed
         rjmp    bright_down_b    ; If button is pressed, skip to decreasing the brightness
@@ -103,7 +103,8 @@ bright_down_b:
 
 		
 		
-init:   eor         r1, r1                  ; zero out the r1 register
+init:  
+	eor         r1, r1                  ; zero out the r1 register
         out         _SREG, r1               ; initialize the status reg
         ldi         r24, 0x80
         sts         CLKPR, r24              ; allow access to clock setup
@@ -123,31 +124,24 @@ init:   eor         r1, r1                  ; zero out the r1 register
 		
 		
 		
-		; set up Fast PWM with timer0
-		ldi			r18, ((1 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00))		; Clear OC0A/OC0B on Compare Match, and
-		out			_TCCR0A, r18															; set OC0A/OC0B on BOTTOM
-		;ldi		r18, ((1 << WGM02) |(1<< CS00))
-		ldi			r18, (1<< CS00)								;no prescaling (16 Mhz)
-		out			_TCCR0B, r18
-		ldi			r18, 255			; change the brightness of GREEN LED									
-		out			_OCR0A, r18
-		ldi			r18, 255			; change the brightness of RED LED
-		out			_OCR0B, r18
-	
-		eor		r18, r18
-		; set up Fast PWM with timer2
-		ldi			r18, ((1 << COM2A1) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20))		; Clear OC2A/OC2B on Compare Match, and
-		;out			_TCCR2A, r18								; set OC2A/OC2B on BOTTOM
-		sts			0xB0, r18										; set OC2A/OC2B on BOTTOM
-		ldi			r18, (1<< CS20)									;no prescaling (16 Mhz)
-		;out			_TCCR2B, r18
-		sts			0xB1, r18
-		;ldi			r18, 255									
-		;out			_OCR2A, r18
-		;sts			0xB3, r18
-		ldi			r18, 255			; pin PD3 for Compare Match B Timer2 BIRGHTNESS BLUE
-		;out			_OCR2B, r18			
-		sts			0xB4, r18
-		
+	; set up Fast PWM with timer0
+	ldi			r18, ((1 << COM0A1) | (1 << COM0B1) | (1 << WGM01) | (1 << WGM00))		; Clear OC0A/OC0B on Compare Match, and
+	out			_TCCR0A, r18															; set OC0A/OC0B on BOTTOM
+	;ldi		r18, ((1 << WGM02) |(1<< CS00))
+	ldi			r18, (1<< CS00)								;no prescaling (16 Mhz)
+	out			_TCCR0B, r18
+	ldi			r18, 255			; change the brightness of GREEN LED									
+	out			_OCR0A, r18
+	ldi			r18, 255			; change the brightness of RED LED
+	out			_OCR0B, r18
+
+	eor		r18, r18
+	; set up Fast PWM with timer2
+	ldi			r18, ((1 << COM2A1) | (1 << COM2B1) | (1 << WGM21) | (1 << WGM20))	; Clear OC2A/OC2B on Compare Match, and						
+	sts			0xB0, r18								; set OC2A/OC2B on BOTTOM
+	ldi			r18, (1<< CS20)								;no prescaling (16 Mhz)
+	sts			0xB1, r18
+	ldi			r18, 255			; pin PD3 for Compare Match B Timer2 BIRGHTNESS BLUE		
+	sts			0xB4, r18
         ret
 
